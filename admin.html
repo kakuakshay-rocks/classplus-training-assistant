@@ -61,12 +61,14 @@
 
     .login-icon {
       width: 56px; height: 56px;
-      background: linear-gradient(135deg, var(--teal), var(--teal-light));
       border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
       margin: 0 auto 20px;
-      font-size: 24px;
       box-shadow: 0 4px 16px var(--teal-glow);
+    }
+    .login-icon img {
+      width: 100%; height: 100%;
+      object-fit: cover;
     }
 
     .login-card h2 {
@@ -144,12 +146,13 @@
 
     .admin-logo-mark {
       width: 38px; height: 38px;
-      background: var(--deep);
       border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      color: white;
-      font-family: 'Instrument Serif', serif;
-      font-size: 18px; font-style: italic;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .admin-logo-mark img {
+      width: 100%; height: 100%;
+      object-fit: cover;
     }
 
     .admin-logo h1 {
@@ -511,7 +514,7 @@
   <!-- ══════ LOGIN SCREEN ══════ -->
   <div class="login-screen" id="loginScreen">
     <div class="login-card">
-      <div class="login-icon">🔐</div>
+      <div class="login-icon"><img src="logo.png" alt="Classplus"></div>
       <h2>Admin Access</h2>
       <p class="login-sub">Enter your password to manage training content</p>
       <form onsubmit="doLogin(event)">
@@ -529,7 +532,7 @@
   <div class="admin-app" id="adminApp">
     <header class="admin-header">
       <div class="admin-logo">
-        <div class="admin-logo-mark">C+</div>
+        <div class="admin-logo-mark"><img src="logo.png" alt="Classplus"></div>
         <h1>Training Manager <em>ADMIN</em></h1>
       </div>
       <div class="admin-actions">
