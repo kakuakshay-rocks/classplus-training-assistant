@@ -593,9 +593,40 @@
     const CAT_COLORS = { Product: 'td-teal', Sales: 'td-gold', Support: 'td-coral', Onboarding: 'td-sage', General: 'td-gray' };
     let isTyping = false;
 
+    const DEFAULT_KB = [
+      {
+        id: '1', title: 'Getting Started with the Classplus Dashboard', category: 'Product',
+        description: 'Navigate the main dashboard and understand key features.',
+        content: 'The Classplus Dashboard is your command center.\n\nKey Sections:\n1. Home — Overview of recent activity, upcoming classes, quick stats\n2. Students — Manage enrollments, view progress, communicate\n3. Content — Upload videos, PDFs, create tests\n4. Payments — Track fee collection and pending dues\n5. Analytics — Engagement metrics and growth trends\n\nPro Tips:\n• Use the search bar to quickly find any student or class\n• Pin frequently accessed sections for faster navigation\n• Check the notification bell daily for important updates\n• Use keyboard shortcuts: Ctrl+K for quick search, Ctrl+N for new class',
+        date: '2026-03-25'
+      },
+      {
+        id: '2', title: 'Handling Payment Disputes', category: 'Support',
+        description: 'Step-by-step guide for resolving payment-related issues.',
+        content: 'When an educator reports a payment issue:\n\nStep 1 — Verify the Transaction\n• Ask for transaction ID or screenshot\n• Check the payment gateway dashboard\n• Note: Payments can take up to 48 hours to reflect\n\nStep 2 — Identify Issue Type\n• Failed transaction — Amount debited but not credited\n• Partial payment — Incorrect amount received\n• Refund request — Student wants money back\n\nStep 3 — Resolution\n• Failed transactions: Raise ticket with payment partner (TAT: 5-7 business days)\n• Partial payments: Verify fee structure, reconcile\n• Refunds: Follow refund policy, process within 7 working days\n\nAlways keep the educator informed about progress.',
+        date: '2026-03-24'
+      },
+      {
+        id: '3', title: 'Upselling Premium Features', category: 'Sales',
+        description: 'Techniques to pitch premium plans to free-tier educators.',
+        content: 'Free Plan educators already see value in Classplus. Our job is to multiply that value.\n\nKey Premium Benefits:\n• Branded app on Play Store / App Store\n• Advanced analytics for student engagement\n• Priority support with faster resolution\n• Built-in referral system and marketing tools\n\nConversation Framework:\n1. Ask about their goals — "Where do you see your coaching in 6 months?"\n2. Identify pain points — "What\'s the biggest challenge managing students online?"\n3. Connect features to goals — "With a branded app, students see you as a professional institution"\n4. Social proof — Share success stories of similar educators\n5. Offer a trial — Let them experience premium for 7 days\n\nNever hard-sell. Educate and let value speak.',
+        date: '2026-03-23'
+      },
+      {
+        id: '4', title: 'New Joiner Orientation Checklist', category: 'Onboarding',
+        description: 'Everything a new team member needs in their first week.',
+        content: 'Welcome to Classplus!\n\nDay 1:\n☐ Collect ID card and laptop from IT\n☐ Set up official email and Slack\n☐ Meet your buddy (assigned mentor)\n☐ Complete HR paperwork\n\nDay 2-3:\n☐ Product walkthrough session\n☐ Shadow 3 customer calls\n☐ Read the Brand Guidelines document\n☐ Join relevant Slack channels\n\nDay 4-5:\n☐ Take Product Knowledge Quiz (min 80% to pass)\n☐ Role-play session with manager\n☐ Set 30-60-90 day goals\n☐ First 1:1 with manager\n\nKey Resources:\n• Internal Wiki: wiki.classplus.co\n• Product Demo: demo.classplus.co\n• HR Policies: in your welcome email',
+        date: '2026-03-22'
+      }
+    ];
+
     function getKB() {
       const d = localStorage.getItem(STORAGE_KEY);
-      return d ? JSON.parse(d) : [];
+      if (!d) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_KB));
+        return [...DEFAULT_KB];
+      }
+      return JSON.parse(d);
     }
 
     /* ── Page switching ── */
