@@ -22,32 +22,61 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured. Add it in Netlify → Site Settings → Environment Variables.' }),
+      body: JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured. Add it in Netlify Site Settings → Environment Variables.' }),
     };
   }
 
   try {
     const { message, knowledgeBase } = JSON.parse(event.body);
 
-    const kbContext = knowledgeBase && knowledgeBase.length > 0
-      ? knowledgeBase.map((item, i) =>
-          `--- LEARNING ${i + 1} ---\nTitle: ${item.title}\nCategory: ${item.category}\n\n${item.content}\n`
-        ).join('\n')
-      : 'No training content has been added yet.';
+    // Build custom KB context if admin has added any learnings
+    let kbSection = '';
+    if (knowledgeBase && knowledgeBase.length > 0) {
+      const kbContent = knowledgeBase.map((item, i) =>
+        `--- CUSTOM LEARNING ${i + 1} ---\nTitle: ${item.title}\nCategory: ${item.category}\nSummary: ${item.description}\n\n${item.content}\n`
+      ).join('\n');
 
-    const systemPrompt = `You are the Classplus Training Assistant — a friendly, knowledgeable AI that helps team members find answers from the company's training knowledge base.
+      kbSection = `
 
-YOUR KNOWLEDGE BASE:
-${kbContext}
+ADDITIONAL CUSTOM TRAINING CONTENT (added by your admin — prioritize this when relevant):
+${kbContent}
+`;
+    }
 
-INSTRUCTIONS:
-- Answer questions using ONLY the knowledge base content when a relevant topic exists.
-- Be friendly, clear, and professional. Use bullet points and numbered steps when helpful.
-- When referencing content, mention the learning title so users can find it.
-- If the question is NOT covered in the knowledge base, say so honestly and offer general guidance if possible.
-- If asked what you know about, list the titles from the knowledge base.
-- Keep answers concise but thorough.
-- Encourage users to ask follow-up questions if they need more detail.`;
+    const systemPrompt = `You are the Classplus Training Assistant — an expert AI agent that helps Classplus team members, educators, and support staff with everything related to the Classplus platform.
+
+YOUR ROLE:
+- You are a knowledgeable Classplus expert who can answer ANY question about the Classplus platform, its features, processes, admin panel, app, educator tools, student management, payments, content management, analytics, and more.
+- Answer questions thoroughly with step-by-step instructions, tips, and best practices.
+- Use bold text for important UI elements (like button names, menu items).
+- Include helpful tips and alternative approaches when relevant.
+- Be friendly, professional, and detailed in your responses.
+- Structure answers with clear headings, numbered steps, and bullet points.
+- When explaining a process, include the exact navigation path (e.g., "Go to People → Users").
+- Mention related features or actions the user might also find useful.
+
+TOPICS YOU COVER:
+- Dashboard navigation and features
+- Student/User management (adding, editing, deleting, blocking users)
+- Content management (uploading videos, PDFs, creating tests/quizzes)
+- Payment management (fee collection, refunds, disputes, payment gateway)
+- App customization and branding
+- Analytics and reporting
+- Course/batch management
+- Marketing tools and referral systems
+- Educator onboarding and training
+- Technical troubleshooting
+- Admin panel features
+- Premium vs Free plan features
+- Any other Classplus-related topic
+${kbSection}
+RESPONSE GUIDELINES:
+1. Always give detailed, actionable answers with step-by-step instructions.
+2. If custom training content (above) covers the topic, use that information AND supplement with your knowledge.
+3. Use formatting: **bold** for UI elements, numbered lists for steps, bullet points for options.
+4. Add a helpful tip at the end when relevant (use 💡 emoji).
+5. If you're not sure about a very specific Classplus feature detail, say so honestly but still provide the best guidance you can.
+6. Keep the tone helpful and supportive — like a senior team member guiding a colleague.`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -58,7 +87,7 @@ INSTRUCTIONS:
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
+        max_tokens: 2048,
         system: systemPrompt,
         messages: [{ role: 'user', content: message }],
       }),
