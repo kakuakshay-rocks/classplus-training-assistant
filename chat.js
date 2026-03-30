@@ -22,25 +22,19 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured. Add it in Netlify Site Settings → Environment Variables.' }),
+      body: JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured.' }),
     };
   }
 
   try {
     const { message, knowledgeBase } = JSON.parse(event.body);
 
-    // Build custom KB context if admin has added any learnings
     let kbSection = '';
     if (knowledgeBase && knowledgeBase.length > 0) {
       const kbContent = knowledgeBase.map((item, i) =>
         `--- CUSTOM LEARNING ${i + 1} ---\nTitle: ${item.title}\nCategory: ${item.category}\nSummary: ${item.description}\n\n${item.content}\n`
       ).join('\n');
-
-      kbSection = `
-
-ADDITIONAL CUSTOM TRAINING CONTENT (added by your admin — prioritize this when relevant):
-${kbContent}
-`;
+      kbSection = `\n\nADDITIONAL CUSTOM TRAINING CONTENT (added by admin — prioritize this when relevant):\n${kbContent}\n`;
     }
 
     const systemPrompt = `You are the Classplus Training Assistant — an expert AI agent that helps Classplus team members, educators, and support staff with everything related to the Classplus platform.
@@ -72,10 +66,10 @@ TOPICS YOU COVER:
 ${kbSection}
 RESPONSE GUIDELINES:
 1. Always give detailed, actionable answers with step-by-step instructions.
-2. If custom training content (above) covers the topic, use that information AND supplement with your knowledge.
+2. If custom training content covers the topic, use that information AND supplement with your knowledge.
 3. Use formatting: **bold** for UI elements, numbered lists for steps, bullet points for options.
-4. Add a helpful tip at the end when relevant (use 💡 emoji).
-5. If you're not sure about a very specific Classplus feature detail, say so honestly but still provide the best guidance you can.
+4. Add a helpful tip at the end when relevant.
+5. If you are not sure about a very specific Classplus feature detail, say so honestly but still provide the best guidance you can.
 6. Keep the tone helpful and supportive — like a senior team member guiding a colleague.`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
