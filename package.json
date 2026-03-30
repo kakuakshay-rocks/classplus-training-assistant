@@ -1,0 +1,8 @@
+{
+  "name": "classplus-training-assistant",
+  "version": "1.0.0",
+  "description": "AI-powered training assistant with admin backend and user frontend",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
